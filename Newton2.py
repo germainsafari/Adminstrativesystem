@@ -1,41 +1,34 @@
-def PolyRoots(coefficients):
-    # Initialize an empty list to store the roots
+def PolyRoots(coefficients, epsilon=1e-10, max_iterations=100):
+    def polynomial(coef, x):
+        return sum(c * x**i for i, c in enumerate(coef))
+
+    def derivative(coef, x):
+        return sum(i * c * x**(i-1) for i, c in enumerate(coef[1:], start=1))
+
     roots = []
 
+    for i in range(len(coefficients)-1):
+        # Use each coefficient as an initial guess
+        x0 = coefficients[i]
 
-    if len(coefficients) == 0:
-        return roots
+        for _ in range(max_iterations):
+            f_x0 = polynomial(coefficients, x0)
+            f_prime_x0 = derivative(coefficients, x0)
 
+            if abs(f_prime_x0) < epsilon:
+                break
 
-    guess = 1
+            x1 = x0 - f_x0 / f_prime_x0
 
-    # Iterate until the tolerance is reached or the maximum number of iterations is exceeded
-    tolerance = 1e-6
-    max_iterations = 1000
-    iterations = 0
-    while iterations < max_iterations:
+            if abs(x1 - x0) < epsilon:
+                roots.append(round(x1, 10))
+                break
 
-        derivative = []
-        for i in range(len(coefficients) - 1):
-            derivative.append(coefficients[i] * (len(coefficients) - i - 1))
-
-
-        polynomial_value = 0
-        derivative_value = 0
-        for i in range(len(coefficients)):
-            polynomial_value += coefficients[i] * guess ** (len(coefficients) - i - 1)
-            derivative_value += derivative[i] * guess ** (len(derivative) - i - 1)
-
-        guess -= polynomial_value / derivative_value
-
-
-        if abs(polynomial_value) < tolerance:
-            roots.append(guess)
-            break
-
-        iterations += 1
+            x0 = x1
 
     return roots
+
+# Examples
 print(PolyRoots([1, -1.5]))       # Output: [1.5]
 print(PolyRoots([1, -2, 1]))       # Output: [1.0, 1.0]
 print(PolyRoots([1, 2, 2]))        # Output: []
