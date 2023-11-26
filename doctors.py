@@ -7,6 +7,7 @@ class Doctor(User):
         self.pwz = pwz
         self.duties = []
     def add_duty(self, date):
+        self.duties.append(date)
 
 
 
